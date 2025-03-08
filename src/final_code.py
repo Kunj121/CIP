@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-filepath = 'CIP_2025.xlsx'
+filepath = 'data_manual/CIP_2025.xlsx'
 data = pd.read_excel(filepath, sheet_name=None)
 
 exchange_rates, forward_rates, interest_rates = data['Spot'].set_index('Date'), data['Forward'].set_index('Date'), data['OIS'].set_index('Date')
