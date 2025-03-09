@@ -82,6 +82,7 @@ XLConnect
 xlsx
 # XML
 xtable
+xbbg
 xts
 # xtsparallel
 zoo
