@@ -2,6 +2,27 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import requests
+from io import BytesIO
+import os
+
+def download():
+    target_file = "../data_manual/CIP_2025.xlsx"
+    import requests, os
+    url = "https://raw.githubusercontent.com/Kunj121/CIP/main/data_manual/CIP_2025.xlsx"
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an error on bad responses
+    # Ensure the data_manual folder exists.
+    os.makedirs(os.path.dirname(target_file), exist_ok=True)
+    # Write the file to the target path.
+    with open(target_file, "wb") as f:
+        f.write(response.content)
+    print(f"File saved to {os.path.abspath(target_file)}")
+    df =  pd.read_excel(target_file)
+    return df
+
+
+
 
 def fetch_bloomberg_historical_data():
     """
@@ -197,13 +218,17 @@ def plot_cip(end ='2025-03-01',excel=True):
     start = '2010-01-01'
     if excel:
         # 1) Load from Excel
-        filepath = '../data_manual/CIP_2025.xlsx'
+        filepath = "./data_manual/CIP_2025.xlsx"
         data = pd.read_excel(filepath, sheet_name=None)
 
-        exchange_rates = data['Spot'].set_index('Date')
-        forward_rates = data['Forward'].set_index('Date')
-        interest_rates = data['OIS'].set_index('Date')
+        df_spot = data["Spot"]
+        exchange_rates = df_spot.set_index("Date")
 
+        df_forward = data["Forward"]
+        forward_rates = df_forward.set_index("Date")
+
+        df_ir = data["OIS"]
+        interest_rates = df_ir.set_index("Date")
         # Standard columns
         cols = ["AUD", "CAD", "CHF", "EUR", "GBP", "JPY", "NZD", "SEK"]
         exchange_rates.columns = cols
@@ -363,12 +388,17 @@ def load_raw(end ='2025-03-01',excel=False, plot = False):
     start = '2010-01-01'
     if excel:
         # 1) Load from Excel
-        filepath = '../data_manual/CIP_2025.xlsx'
+        filepath = "./data_manual/CIP_2025.xlsx"
         data = pd.read_excel(filepath, sheet_name=None)
 
-        exchange_rates = data['Spot'].set_index('Date')
-        forward_rates = data['Forward'].set_index('Date')
-        interest_rates = data['OIS'].set_index('Date')
+        df_spot = data["Spot"]
+        exchange_rates = df_spot.set_index("Date")
+
+        df_forward = data["Forward"]
+        forward_rates = df_forward.set_index("Date")
+
+        df_ir = data["OIS"]
+        interest_rates = df_ir.set_index("Date")
 
         # Standard columns
         cols = ["AUD", "CAD", "CHF", "EUR", "GBP", "JPY", "NZD", "SEK"]
@@ -487,12 +517,17 @@ def load_raw_pieces(end ='2025-03-01',excel=False, plot = False):
     start = '2010-01-01'
     if excel:
         # 1) Load from Excel
-        filepath = '../data_manual/CIP_2025.xlsx'
+        filepath = "./data_manual/CIP_2025.xlsx"
         data = pd.read_excel(filepath, sheet_name=None)
 
-        exchange_rates = data['Spot'].set_index('Date')
-        forward_rates = data['Forward'].set_index('Date')
-        interest_rates = data['OIS'].set_index('Date')
+        df_spot = data["Spot"]
+        exchange_rates = df_spot.set_index("Date")
+
+        df_forward = data["Forward"]
+        forward_rates = df_forward.set_index("Date")
+
+        df_ir = data["OIS"]
+        interest_rates = df_ir.set_index("Date")
 
         # Standard columns
         cols = ["AUD", "CAD", "CHF", "EUR", "GBP", "JPY", "NZD", "SEK"]
