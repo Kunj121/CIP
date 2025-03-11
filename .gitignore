@@ -249,3 +249,6 @@ src/z_scratch_project_template.ipynb
 *Thumbs.db
 
 src/z_scratch_pipeline_template.ipynb
+
+.doit.db.db
+test.ipynb

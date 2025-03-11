@@ -906,5 +906,49 @@ def plot_weighted_median_with_distribution_bars(
     return ax
 
 
+
+def html_to_png(directory):
+    """
+    Convert all .html files in the given directory to .png format.
+
+    Parameters:
+    directory (str): The path to the directory containing .html files.
+
+    Returns:
+    list: A list of paths to the generated .png files.
+    """
+    from pathlib import Path
+    import subprocess
+
+    directory = Path(directory)
+    if not directory.exists():
+        raise FileNotFoundError(f"Directory '{directory}' does not exist.")
+
+    # Create output directory for PNGs
+    output_dir = directory / "converted_pngs"
+    output_dir.mkdir(exist_ok=True)
+
+    # Find all HTML files
+    html_files = list(directory.glob("*.html"))
+    png_files = []
+
+    for html_file in html_files:
+        png_file = output_dir / f"{html_file.stem}.png"
+        try:
+            subprocess.run(
+                ["wkhtmltoimage", str(html_file), str(png_file)],
+                check=True
+            )
+            png_files.append(str(png_file))
+        except subprocess.CalledProcessError as e:
+            print(f"Error converting {html_file}: {e}")
+
+    return png_files
+
+
+
+
+
+
 if __name__ == "__main__":
     pass
