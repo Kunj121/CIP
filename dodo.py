@@ -152,7 +152,7 @@ def task_download_cip_data():
 
     def download():
         import requests
-        url = "https://raw.githubusercontent.com/Kunj121/CIP/main/data_manual/CIP_2025.xlsx"
+        url = "https://raw.githubusercontent.com/Kunj121/CIP_DATA/main/CIP_2025%20(1).xlsx"
         response = requests.get(url)
         response.raise_for_status()
         os.makedirs(MANUAL_DATA_DIR, exist_ok=True)
