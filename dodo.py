@@ -32,11 +32,15 @@ import os
 sys.path.append(os.path.abspath("src"))  # Ensure `src/` is in the path
 
 from src.settings import config
+import src.settings
 
 DATA_DIR = (config("DATA_DIR"))
 OUTPUT_DIR = (config("OUTPUT_DIR"))
 MANUAL_DATA_DIR = (config("MANUAL_DATA_DIR"))
 PUBLISH_DIR = (config("PUBLISH_DIR"))
+
+
+
 
 
 # Custom reporter: print task lines in green
@@ -76,6 +80,55 @@ def jupyter_clear_output(notebook):
 #######################################
 ## PyDoit Tasks
 #######################################
+
+
+from pathlib import Path
+
+def update_bloomberg():
+    """Prompt the user and update the BLOOMBERG variable in settings.py."""
+    user_input = input("Do you want to run from Bloomberg terminal? (Y/N): ").strip().upper()
+    new_value = "True" if user_input == "Y" else "False"
+
+    settings_path = Path("src/settings.py")
+
+    # Read settings.py
+    with open(settings_path, "r") as f:
+        lines = f.readlines()
+
+    # Modify the BLOOMBERG variable if it exists, otherwise append it
+    found = False
+    for i, line in enumerate(lines):
+        if line.strip().startswith("BLOOMBERG ="):
+            lines[i] = f"BLOOMBERG = {new_value}\n"
+            found = True
+            break
+
+    if not found:
+        lines.append(f"\nBLOOMBERG = {new_value}\n")
+
+    # Write updated settings back to file
+    with open(settings_path, "w") as f:
+        f.writelines(lines)
+
+    import importlib
+    importlib.reload(src.settings)
+
+    if new_value == "True":
+        try:
+            from xbbg import blp  # Attempt to import xbbg
+        except ModuleNotFoundError:
+            print("No Bloomberg terminal found on device.")
+
+
+
+
+
+def task_BLOOMBERG():
+    """PyDoit task to update Bloomberg mode in settings.py."""
+    return {
+        "actions": [update_bloomberg],
+        "verbosity": 2,  # Ensure output is shown
+    }
 
 def task_config():
     """Create directories for data and output if they don't exist."""
@@ -151,28 +204,26 @@ def task_run_notebooks():
 def task_pull_cip():
     """Run CIP analysis and rename output plots correctly."""
 
+    import re
     def rename_output_files():
-        """Rename automatically generated plots to expected filenames."""
-        import os
-        from pathlib import Path
-
-        old_files = {
-            "main_cip_9_0.png": "cip_spread_plot_replication.png",
-            "main_cip_14_0.png": "cip_spread_plot_2025.png",
-        }
+        """Rename automatically generated plots to expected filenames based on a pattern match."""
         output_dir = OUTPUT_DIR / "main_cip_files"
-
-        # Ensure output directory exists
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-        for old_name, new_name in old_files.items():
-            old_path = output_dir / old_name
-            new_path = output_dir / new_name  # Keep it in main_cip_files
-            if old_path.exists():
-                old_path.rename(new_path)
-                print(f"Renamed {old_path} → {new_path}")
+        file_patterns = {
+            r"main_cip_\d+_0.png": "cip_spread_plot_replication.png",
+            r"main_cip_\d+_1.png": "cip_spread_plot_2025.png",
+        }
+
+        for old_file in output_dir.glob("main_cip_*.png"):
+            for pattern, new_name in file_patterns.items():
+                if re.match(pattern, old_file.name):
+                    new_path = output_dir / new_name
+                    old_file.rename(new_path)
+                    print(f"Renamed {old_file} → {new_path}")
+                    break
             else:
-                print(f"Warning: {old_path} not found.")
+                print(f"Warning: No match found for {old_file}")
 
     return {
         "actions": [
@@ -287,8 +338,11 @@ def task_clean_reports():
 #######################################
 
 # To run these tasks, install PyDoit (`pip install doit`) and then use:
-#   doit list              # List all available tasks
+#   doit BLOOMBERG         # Asks if you have a bloomberg terminal to pull data
+#   doit config            # Creates directory
 #   doit download_cip_data # Download the CIP Excel file
-#   doit pull_cip          # Run CIP analysis (depends on downloaded file)
+#   doit clean_data        # Creates tidy data set in the _data folder
 #   doit run_notebooks     # Execute notebooks (including main_cip.ipynb)
+#   doit pull_cip          # Renames and cleans _output folder
 #   doit summary_stats     # Generate summary statistics
+#   doit generate_paper    #Outputs LaTex and PDF of notebooks

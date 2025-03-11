@@ -8,6 +8,13 @@ import matplotlib.dates as mdates
 import requests
 from io import BytesIO
 import os
+try:
+    import settings
+except ModuleNotFoundError:
+    import src.settings
+
+
+settings.BLOOMBERG = False
 
 
 def download():
@@ -197,7 +204,7 @@ def fetch_bloomberg_historical_data(start_date, end_date):
     return df_merged
 
 
-def plot_cip(end ='2025-03-01',excel=True):
+def plot_cip(end ='2025-03-01'):
     """
     Reads data from Excel if excel=True, otherwise fetch from Bloomberg using xbbg.
 
@@ -218,9 +225,8 @@ def plot_cip(end ='2025-03-01',excel=True):
     df_merged : pandas.DataFrame
         Final cleaned DataFrame with CIP spreads and underlying data.
     """
-
     start = '2010-01-01'
-    if excel:
+    if settings.BLOOMBERG == False:
         possible_paths = [
             "./data_manual/CIP_2025.xlsx",
             "../data_manual/CIP_2025.xlsx",
@@ -381,7 +387,7 @@ def plot_cip(end ='2025-03-01',excel=True):
 
 
 
-def load_raw(end ='2025-03-01',excel=False, plot = False):
+def load_raw(end ='2025-03-01', plot = False):
     """
     Reads data from Excel if excel=True, otherwise fetch from Bloomberg using xbbg.
 
@@ -404,7 +410,7 @@ def load_raw(end ='2025-03-01',excel=False, plot = False):
     """
 
     start = '2010-01-01'
-    if excel:
+    if settings.BLOOMBERG == False:
         possible_paths = [
             "./data_manual/CIP_2025.xlsx",
             "../data_manual/CIP_2025.xlsx",
@@ -469,7 +475,7 @@ def load_raw(end ='2025-03-01',excel=False, plot = False):
     return df_merged.loc[:end]
 
 def compute_cip(end = '2020-01-01'):
-    df_merged = load_raw(end = end, excel=True)
+    df_merged = load_raw(end = end)
 
     # List of all the core currencies
     currencies = ['AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'NZD', 'SEK']
@@ -547,7 +553,7 @@ def load_raw_pieces(end ='2025-03-01',excel=False, plot = False):
         Final cleaned DataFrame with CIP spreads and underlying data.
     """
     start = '2010-01-01'
-    if excel:
+    if settings.BLOOMBERG == False:
         possible_paths = [
             "./data_manual/CIP_2025.xlsx",
             "../data_manual/CIP_2025.xlsx",

@@ -8,7 +8,7 @@ import src.pull_bloomberg_cip_data
 
 DATA_DIR = Path(config("DATA_DIR"))  # Should point to '_data'
 
-df = src.pull_bloomberg_cip_data.load_raw('2025-03-01', excel=True)
+df = src.pull_bloomberg_cip_data.load_raw('2025-03-01')
 output_file = DATA_DIR / "tidy_data.csv"
 
 df.to_csv(output_file, index=False)

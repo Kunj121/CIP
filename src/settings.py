@@ -25,6 +25,8 @@ from platform import system
 
 from decouple import config as _config
 from pandas import to_datetime
+#Bloomberg indicator
+BLOOMBERG = False
 
 
 def get_os():
