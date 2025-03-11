@@ -59,7 +59,7 @@ def fetch_bloomberg_historical_data(start_date, end_date):
     end_date = "2025-12-31"
 
     # Tickers for Spot Rates
-    currency_tickers = [
+    interest_rates = [
         "ADSOC CMPN Curncy",  # AUD
         "CDSOC CMPN Curncy",  # CAD
         "SFSNTC CMPN Curncy", # CHF
@@ -67,23 +67,25 @@ def fetch_bloomberg_historical_data(start_date, end_date):
         "BPSWSC CMPN Curncy", # GBP
         "JYSOC CMPN Curncy",  # JPY
         "NDSOC CMPN Curncy",  # NZD
-        "USSOC CMPN Curncy",  # USD/SEK
+        "SKSWTNC BGN Curncy", # SEK
+        "USSOC CMPN Curncy",  # USD
     ]
 
     # Tickers for 3M interest rates (overnight or 3M LIBOR, depending on the data vendor)
-    rate_tickers = [
-        "US0003M CMPN Curncy",  # USD
-        "EE0003M CMPN Curncy",  # EUR
-        "JY0003M CMPN Curncy",  # JPY
-        "AU0003M CMPN Curncy",  # AUD
-        "CD0003M CMPN Curncy",  # CAD
-        "SF0003M CMPN Curncy",  # CHF
-        "NZ0003M CMPN Curncy",  # NZD
-        "SK0003M CMPN Curncy"   # SEK
+    forward_rates = [
+        "AUD3M CMPN Curncy",
+        "CAD3M CMPN Curncy",
+        "CHF3M CMPN Curncy",
+        "EUR3M CMPN Curncy",
+        "GBP3M CMPN Curncy",
+        "JPY3M CMPN Curncy",
+        "NZD3M CMPN Curncy",
+        "SEK3M CMPN Curncy"
     ]
 
+
     # Tickers for 3M swap rates (or 3M forward quotes)
-    swap_tickers = [
+    spot_rates = [
         "AUD CMPN Curncy",
         "CAD CMPN Curncy",
         "CHF CMPN Curncy",
@@ -95,37 +97,39 @@ def fetch_bloomberg_historical_data(start_date, end_date):
     ]
 
     # Mapping from Bloomberg columns to simpler names
-    currency_mapping = {
-        "ADSOC CMPN Curncy_PX_LAST": "AUD",
-        "CDSOC CMPN Curncy_PX_LAST": "CAD",
-        "SFSNTC CMPN Curncy_PX_LAST": "CHF",
-        "EUSWEC CMPN Curncy_PX_LAST": "EUR",
-        "BPSWSC CMPN Curncy_PX_LAST": "GBP",
-        "JYSOC CMPN Curncy_PX_LAST": "JPY",
-        "NDSOC CMPN Curncy_PX_LAST": "NZD",
-        "USSOC CMPN Curncy_PX_LAST": "SEK"
+   
+    IR_mapping = {
+        "ADSOC CMPN Curncy_PX_LAST": "AUD_IR",
+        "CDSOC CMPN Curncy_PX_LAST": "CAD_IR",
+        "SFSNTC CMPN Curncy_PX_LAST": "CHF_IR",
+        "EUSWEC CMPN Curncy_PX_LAST": "EUR_IR",
+        "BPSWSC CMPN Curncy_PX_LAST": "GBP_IR",
+        "JYSOC CMPN Curncy_PX_LAST": "JPY_IR",
+        "NDSOC CMPN Curncy_PX_LAST": "NZD_IR",
+        "SKSWTNC BGN Curncy_PX_LAST": "SEK_IR",
+        "USSOC CMPN Curncy_PX_LAST": "USD_IR"
     }
 
-    rate_mapping = {
-        "US0003M CMPN Curncy_PX_LAST": "USD_IR",
-        "EE0003M CMPN Curncy_PX_LAST": "EUR_IR",
-        "JY0003M CMPN Curncy_PX_LAST": "JPY_IR",
-        "AU0003M CMPN Curncy_PX_LAST": "AUD_IR",
-        "CD0003M CMPN Curncy_PX_LAST": "CAD_IR",
-        "SF0003M CMPN Curncy_PX_LAST": "CHF_IR",
-        "NZ0003M CMPN Curncy_PX_LAST": "NZD_IR",
-        "SK0003M CMPN Curncy_PX_LAST": "SEK_IR"
+    forward_mapping = {
+        "AUD3M CMPN Curncy_PX_LAST": "AUD_CURNCY3M",
+        "CAD3M CMPN Curncy_PX_LAST": "CAD_CURNCY3M",
+        "CHF3M CMPN Curncy_PX_LAST": "CHF_CURNCY3M",
+        "EUR3M CMPN Curncy_PX_LAST": "EUR_CURNCY3M",
+        "GBP3M CMPN Curncy_PX_LAST": "GBP_CURNCY3M",
+        "JPY3M CMPN Curncy_PX_LAST": "JPY_CURNCY3M",
+        "NZD3M CMPN Curncy_PX_LAST": "NZD_CURNCY3M",
+        "SEK3M CMPN Curncy_PX_LAST": "SEK_CURNCY3M"
     }
 
-    swap_mapping = {
-        "AUD CMPN Curncy_PX_LAST": "AUD_CURNCY3M",
-        "CAD CMPN Curncy_PX_LAST": "CAD_CURNCY3M",
-        "CHF CMPN Curncy_PX_LAST": "CHF_CURNCY3M",
-        "EUR CMPN Curncy_PX_LAST": "EUR_CURNCY3M",
-        "GBP CMPN Curncy_PX_LAST": "GBP_CURNCY3M",
-        "JPY CMPN Curncy_PX_LAST": "JPY_CURNCY3M",
-        "NZD CMPN Curncy_PX_LAST": "NZD_CURNCY3M",
-        "SEK CMPN Curncy_PX_LAST": "SEK_CURNCY3M"
+    spot_mapping = {
+        "AUD CMPN CURNCY_PX_LAST": "AUD_CURNCY",
+        "CAD CMPN CURNCY_PX_LAST": "CAD_CURNCY",
+        "CHF CMPN CURNCY_PX_LAST": "CHF_CURNCY",
+        "EUR CMPN CURNCY_PX_LAST": "EUR_CURNCY",
+        "GBP CMPN CURNCY_PX_LAST": "GBP_CURNCY",
+        "JPY CMPN CURNCY_PX_LAST": "JPY_CURNCY",
+        "NZD CMPN CURNCY_PX_LAST": "NZD_CURNCY",
+        "SEK CMPN CURNCY_PX_LAST": "SEK_CURNCY"
     }
 
     fields = ["PX_LAST"]
@@ -139,34 +143,34 @@ def fetch_bloomberg_historical_data(start_date, end_date):
         return df
 
     # Pull each set of tickers
-    currency_df = process_df(
+    interest_rates_df = process_df(
         blp.bdh(
-            tickers=currency_tickers,
+            tickers=interest_rates,
             flds=fields,
             start_date=start_date,
             end_date=end_date,
         ),
-        currency_mapping
+        IR_mapping
     )
 
-    rate_df = process_df(
+    forward_rates_df = process_df(
         blp.bdh(
-            tickers=rate_tickers,
+            tickers=forward_rates,
             flds=fields,
             start_date=start_date,
             end_date=end_date,
         ),
-        rate_mapping
+        forward_mapping
     )
 
-    swap_df = process_df(
+    exchange_rates_df = process_df(
         blp.bdh(
-            tickers=swap_tickers,
+            tickers=spot_rates,
             flds=fields,
             start_date=start_date,
             end_date=end_date,
         ),
-        swap_mapping
+        spot_mapping
     )
 
     # For demonstration, we replicate the "3M forward" concept by appending
@@ -176,29 +180,26 @@ def fetch_bloomberg_historical_data(start_date, end_date):
 
     # We keep the original spot rates in swap_df as well for reference:
     cols = ["AUD", "CAD", "CHF", "EUR", "GBP", "JPY", "NZD", "SEK"]
-    for col in cols:
-        swap_df[f"{col}_CURNCY"] = currency_df[col]
+    cols_IR = ["AUD", "CAD", "CHF", "EUR", "GBP", "JPY", "NZD", "SEK", "USD"]
+    exchange_rates_df.columns = cols
+    forward_rates_df.columns = cols
+    interest_rates_df.columns = cols_IR
 
     # Convert certain currencies to reciprocals
-    reciprocal_currencies = ['EUR', 'GBP', 'AUD', 'NZD']
-    for ccy in reciprocal_currencies:
-        if ccy in currency_df.columns:
-            currency_df[ccy] = 1.0 / currency_df[ccy]
-        if f"{ccy}_CURNCY" in swap_df.columns:
-            swap_df[f"{ccy}_CURNCY"] = 1.0 / swap_df[f"{ccy}_CURNCY"]
-        if f"{ccy}_CURNCY3M" in swap_df.columns:
-            swap_df[f"{ccy}_CURNCY3M"] = 1.0 / swap_df[f"{ccy}_CURNCY3M"]
+    # The forward df is actually forward points, so we need to make this into forward rates.
+    forward_rates_df[[c for c in cols if c != 'JPY']] /= 10000
+    forward_rates_df['JPY'] /= 100
+    forward_rates_df = exchange_rates_df + forward_rates_df
 
-    # Rename columns so currency_df columns read as "XXX_CURNCY"
-    for col in cols:
-        if col in currency_df.columns:
-            currency_df.rename(columns={col: f"{col}_CURNCY"}, inplace=True)
+    exchange_rates_df.columns = [name+"_CURNCY" for name in exchange_rates_df.columns]
+    forward_rates.columns = [name+"_CURNCY3M" for name in forward_rates.columns]
+    interest_rates.columns = [name+"_IR" for name in interest_rates.columns]
 
     # Merge all
     df_merged = (
-        currency_df
-        .merge(swap_df, left_index=True, right_index=True, how='inner')
-        .merge(rate_df, left_index=True, right_index=True, how='inner')
+        exchange_rates_df
+        .merge(forward_rates_df, left_index=True, right_index=True, how='inner')
+        .merge(interest_rates_df, left_index=True, right_index=True, how='inner')
     )
 
     return df_merged
