@@ -252,3 +252,5 @@ src/z_scratch_pipeline_template.ipynb
 
 .doit.db.db
 test.ipynb
+pipeline.json
+pyproject.toml

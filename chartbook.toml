@@ -1,8 +1,0 @@
-[theme]
-logo_path = "CIP/logo.png"
-favicon_path = ""
-
-[site]
-title = "CIP Arbitrage Replication"
-author = "Om Mehta and Kunj Shah"
-copyright = "2025"
