@@ -1,3 +1,6 @@
+"""
+Fetches and loads raw data from the directory and cleans it
+"""
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,6 +8,14 @@ import matplotlib.dates as mdates
 import requests
 from io import BytesIO
 import os
+try:
+    import settings
+except ModuleNotFoundError:
+    import src.settings
+
+
+settings.BLOOMBERG = False
+
 
 def download():
     target_file = "../data_manual/CIP_2025.xlsx"
@@ -24,7 +35,7 @@ def download():
 
 
 
-def fetch_bloomberg_historical_data():
+def fetch_bloomberg_historical_data(start_date, end_date):
     """
     Fetch historical data from Bloomberg using xbbg for predefined sets of tickers,
     clean up the data, and merge into a single DataFrame similar to the existing process.
@@ -193,7 +204,7 @@ def fetch_bloomberg_historical_data():
     return df_merged
 
 
-def plot_cip(end ='2025-03-01',excel=True):
+def plot_cip(end ='2025-03-01'):
     """
     Reads data from Excel if excel=True, otherwise fetch from Bloomberg using xbbg.
 
@@ -214,12 +225,25 @@ def plot_cip(end ='2025-03-01',excel=True):
     df_merged : pandas.DataFrame
         Final cleaned DataFrame with CIP spreads and underlying data.
     """
-
     start = '2010-01-01'
-    if excel:
-        # 1) Load from Excel
-        filepath = "./data_manual/CIP_2025.xlsx"
-        data = pd.read_excel(filepath, sheet_name=None)
+    if settings.BLOOMBERG == False:
+        possible_paths = [
+            "./data_manual/CIP_2025.xlsx",
+            "../data_manual/CIP_2025.xlsx",
+        ]
+
+        data = None
+        for filepath in possible_paths:
+            if os.path.exists(filepath):
+                try:
+                    data = pd.read_excel(filepath, sheet_name=None)
+                    break
+                except Exception as e:
+                    print(f"Error loading {filepath}: {e}")
+            else:
+                pass
+        if data is None:
+            raise FileNotFoundError("Could not find or load the CIP_2025.xlsx file in any of the expected locations")
 
         df_spot = data["Spot"]
         exchange_rates = df_spot.set_index("Date")
@@ -363,7 +387,7 @@ def plot_cip(end ='2025-03-01',excel=True):
 
 
 
-def load_raw(end ='2025-03-01',excel=False, plot = False):
+def load_raw(end ='2025-03-01', plot = False):
     """
     Reads data from Excel if excel=True, otherwise fetch from Bloomberg using xbbg.
 
@@ -386,9 +410,24 @@ def load_raw(end ='2025-03-01',excel=False, plot = False):
     """
 
     start = '2010-01-01'
-    if excel:
-        # 1) Load from Excel
-        filepath = "./data_manual/CIP_2025.xlsx"
+    if settings.BLOOMBERG == False:
+        possible_paths = [
+            "./data_manual/CIP_2025.xlsx",
+            "../data_manual/CIP_2025.xlsx",
+        ]
+
+        data = None
+        for filepath in possible_paths:
+            if os.path.exists(filepath):
+                try:
+                    data = pd.read_excel(filepath, sheet_name=None)
+                    break
+                except Exception as e:
+                    print(f"Error loading {filepath}: {e}")
+            else:
+                pass
+        if data is None:
+            raise FileNotFoundError("Could not find or load the CIP_2025.xlsx file in any of the expected locations")
         data = pd.read_excel(filepath, sheet_name=None)
 
         df_spot = data["Spot"]
@@ -436,7 +475,7 @@ def load_raw(end ='2025-03-01',excel=False, plot = False):
     return df_merged.loc[:end]
 
 def compute_cip(end = '2020-01-01'):
-    df_merged = load_raw(end = end, excel=True)
+    df_merged = load_raw(end = end)
 
     # List of all the core currencies
     currencies = ['AUD', 'CAD', 'CHF', 'EUR', 'GBP', 'JPY', 'NZD', 'SEK']
@@ -513,13 +552,23 @@ def load_raw_pieces(end ='2025-03-01',excel=False, plot = False):
     df_merged : pandas.DataFrame
         Final cleaned DataFrame with CIP spreads and underlying data.
     """
-
     start = '2010-01-01'
-    if excel:
-        # 1) Load from Excel
-        filepath = "./data_manual/CIP_2025.xlsx"
-        data = pd.read_excel(filepath, sheet_name=None)
+    if settings.BLOOMBERG == False:
+        possible_paths = [
+            "./data_manual/CIP_2025.xlsx",
+            "../data_manual/CIP_2025.xlsx",
+        ]
 
+        data = None
+        for filepath in possible_paths:
+            if os.path.exists(filepath):
+                try:
+                    data = pd.read_excel(filepath, sheet_name=None)
+                    break
+                except Exception as e:
+                    print(f"Error loading {filepath}: {e}")
+            else:
+                pass
         df_spot = data["Spot"]
         exchange_rates = df_spot.set_index("Date")
 

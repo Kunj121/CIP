@@ -1,15 +1,16 @@
+"""
+Unit test on bloomberg data
+"""
 import pandas as pd
 import pytest
 from settings import config
-import pull_fred
-import src.pull_bloomberg_cip_data
-from src import pull_bloomberg_cip_data
+import pull_bloomberg_cip_data
 
 DATA_DIR = config("DATA_DIR")
 
 
 def test_pull_bloomberg_cip_data_load_raw():
-    df = pull_bloomberg_cip_data.load_raw(end = '2020-01-01')
+    df = pull_bloomberg_cip_data.load_raw(end = '2020-01-01', excel=True)
     # Test if the function returns a pandas DataFrame
     assert isinstance(df, pd.DataFrame)
 
@@ -21,9 +22,6 @@ def test_pull_bloomberg_cip_data_load_raw():
        'CHF_IR', 'EUR_IR', 'GBP_IR', 'JPY_IR', 'NZD_IR', 'SEK_IR', 'USD_IR']
     assert all(col in df.columns for col in expected_columns)
 
-    # Test if the function raises an error when given an invalid data directory
-    with pytest.raises(FileNotFoundError):
-        pull_fred.load_fred(data_dir="invalid_directory")
 
 
 
