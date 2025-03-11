@@ -7,20 +7,24 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import requests
 from io import BytesIO
+import sys
 import os
+
+# Ensure the root directory (CIP/) is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 try:
-    import settings
+    import src.settings as settings  # Try to import normally
 except ModuleNotFoundError:
-    import src.settings
+    import settings as settings # Fallback if src.settings isn't found
 
 
-settings.BLOOMBERG = False
-
+BLOOMBERG = settings.BLOOMBERG
 
 def download():
-    target_file = "../data_manual/CIP_2025.xlsx"
+    target_file = "./data_manual/CIP_2025.xlsx"
     import requests, os
-    url = "https://raw.githubusercontent.com/Kunj121/CIP/main/data_manual/CIP_2025.xlsx"
+    url = "https://raw.githubusercontent.com/Kunj121/CIP_DATA/main/CIP_2025%20(1).xlsx"
     response = requests.get(url)
     response.raise_for_status()  # Raise an error on bad responses
     # Ensure the data_manual folder exists.
@@ -28,7 +32,6 @@ def download():
     # Write the file to the target path.
     with open(target_file, "wb") as f:
         f.write(response.content)
-    print(f"File saved to {os.path.abspath(target_file)}")
     df =  pd.read_excel(target_file)
     return df
 
@@ -227,7 +230,7 @@ def plot_cip(end ='2025-03-01'):
         Final cleaned DataFrame with CIP spreads and underlying data.
     """
     start = '2010-01-01'
-    if settings.BLOOMBERG == False:
+    if BLOOMBERG == False:
         possible_paths = [
             "./data_manual/CIP_2025.xlsx",
             "../data_manual/CIP_2025.xlsx",
@@ -411,7 +414,7 @@ def load_raw(end ='2025-03-01', plot = False):
     """
 
     start = '2010-01-01'
-    if settings.BLOOMBERG == False:
+    if BLOOMBERG == False:
         possible_paths = [
             "./data_manual/CIP_2025.xlsx",
             "../data_manual/CIP_2025.xlsx",
@@ -428,8 +431,8 @@ def load_raw(end ='2025-03-01', plot = False):
             else:
                 pass
         if data is None:
-            raise FileNotFoundError("Could not find or load the CIP_2025.xlsx file in any of the expected locations")
-        data = pd.read_excel(filepath, sheet_name=None)
+            download()
+        data = pd.read_excel(filepath, sheet_name=None, parse_dates=['Date'])
 
         df_spot = data["Spot"]
         exchange_rates = df_spot.set_index("Date")
@@ -554,7 +557,7 @@ def load_raw_pieces(end ='2025-03-01',excel=False, plot = False):
         Final cleaned DataFrame with CIP spreads and underlying data.
     """
     start = '2010-01-01'
-    if settings.BLOOMBERG == False:
+    if BLOOMBERG == False:
         possible_paths = [
             "./data_manual/CIP_2025.xlsx",
             "../data_manual/CIP_2025.xlsx",

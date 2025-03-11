@@ -6,20 +6,21 @@ import sys
 import os
 import pandas as pd
 import numpy as np
-try:
-    from settings import config
-except ModuleNotFoundError:
-    from src.settings import config
 
-
-
-OUTPUT_DIR = config("OUTPUT_DIR")
+# Add the project root (CIP/) to sys.path if not already present
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 try:
     from src.pull_bloomberg_cip_data import *
 except ModuleNotFoundError:
     from pull_bloomberg_cip_data import *
 
+
+
+
+from settings import config
+
+OUTPUT_DIR = config("OUTPUT_DIR")
 
 
 def compute_cip_statistics(cip_data):
