@@ -16,6 +16,16 @@ and then install the dependencies with pip. Make sure you have an environment in
 ```
 pip install -r requirements.txt
 ```
+
+In order to convert your files to LaTeX, you will need to have Pandoc installed on your device. 
+If you are running on Mac OS then
+
+```
+brew install pandoc
+```
+
+
+
 Finally, you can then run 
 ```
 doit
