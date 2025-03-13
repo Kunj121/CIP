@@ -237,7 +237,7 @@ def task_run_notebooks():
     }
 
 
-def task_pull_cip():
+def task_rename_plots():
     """Run CIP analysis and rename output plots correctly."""
 
     import re
