@@ -361,7 +361,6 @@ def task_clean_reports():
         PUBLISH_DIR / "paper.aux",
         PUBLISH_DIR / "paper.log",
         PUBLISH_DIR / "paper.out",
-        PUBLISH_DIR / "paper_files",
         PUBLISH_DIR / "spread_plot_rep.pdf"
     ]
 
