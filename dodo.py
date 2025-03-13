@@ -205,6 +205,7 @@ def task_pull_cip():
     """Run CIP analysis and rename output plots correctly."""
 
     import re
+
     def rename_output_files():
         """Rename automatically generated plots to expected filenames based on a pattern match."""
         output_dir = OUTPUT_DIR / "main_cip_files"
@@ -215,14 +216,25 @@ def task_pull_cip():
             r"main_cip_\d+_1.png": "cip_spread_plot_2025.png",
         }
 
+        matched_files = set()  # Track matched files
+
         for old_file in output_dir.glob("main_cip_*.png"):
             for pattern, new_name in file_patterns.items():
                 if re.match(pattern, old_file.name):
                     new_path = output_dir / new_name
+
+                    # Check if the file already exists and avoid overwriting
+                    if new_path.exists():
+                        new_path = output_dir / "cip_spread_2025.png"
+
                     old_file.rename(new_path)
                     print(f"Renamed {old_file} → {new_path}")
-                    break
-            else:
+                    matched_files.add(old_file.name)
+                    # No break here so all files get renamed
+
+        # Check for missing files
+        for old_file in output_dir.glob("main_cip_*.png"):
+            if old_file.name not in matched_files:
                 print(f"Warning: No match found for {old_file}")
 
     return {
@@ -294,13 +306,12 @@ def task_generate_paper():
     return {
         "actions": [
             copy_notebook,  # Copy first
-            f"jupyter nbconvert --execute --to notebook --inplace --ExecutePreprocessor.allow_errors=True {paper_notebook}",
-            f"jupyter nbconvert --to latex --output-dir={PUBLISH_DIR} {paper_notebook}",
-            f"pdflatex -output-directory={PUBLISH_DIR} {paper_tex}",
-            # Comment out or remove the following line if no bibliography is needed
-            # f"bibtex {paper_tex.with_suffix('')}",
-            f"pdflatex -output-directory={PUBLISH_DIR} {paper_tex}",
-            f"pdflatex -output-directory={PUBLISH_DIR} {paper_tex}"
+            f"jupyter nbconvert --execute --to notebook --inplace --ExecutePreprocessor.allow_errors=True \"{paper_notebook}\"",
+            f"jupyter nbconvert --to latex --output-dir=\"{PUBLISH_DIR}\" \"{paper_notebook}\"",
+            f"pdflatex -output-directory=\"{PUBLISH_DIR}\" \"{paper_tex}\"",
+            # f"bibtex \"{paper_tex.with_suffix('')}\"",  # Keep commented if no bibliography
+            f"pdflatex -output-directory=\"{PUBLISH_DIR}\" \"{paper_tex}\"",
+            f"pdflatex -output-directory=\"{PUBLISH_DIR}\" \"{paper_tex}\""
         ],
         "file_dep": [],
         "targets": [str(paper_tex)],
@@ -315,11 +326,12 @@ def task_clean_reports():
         PUBLISH_DIR / "paper.log",
         PUBLISH_DIR / "paper.out",
         PUBLISH_DIR / "paper_files",
+        PUBLISH_DIR / "spread_plot_rep.pdf"
     ]
 
     def remove_files():
         for file in files_to_remove:
-            if file.exists():
+            if file.is_file():
                 file.unlink()
                 print(f"Removed {file}")
             else:

@@ -471,9 +471,11 @@ def load_raw(end ='2025-03-01', plot = False):
             df_merged[f"{ccy}_CURNCY"] = 1.0 / df_merged[f"{ccy}_CURNCY"]
             df_merged[f"{ccy}_CURNCY3M"] = 1.0 / df_merged[f"{ccy}_CURNCY3M"]
 
+
     else:
         # 2) Pull from Bloomberg
         df_merged = fetch_bloomberg_historical_data(start, end)
+
 
     return df_merged.loc[:end]
 
