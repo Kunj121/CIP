@@ -86,39 +86,39 @@ from pathlib import Path
 import subprocess
 import shutil
 
-def install_pandoc():
-    """Checks if Pandoc is installed and installs it if missing."""
-    if shutil.which("pandoc") is None:
-        print("Pandoc not found. Installing...")
-
-        try:
-            if shutil.which("brew"):  # Mac (Homebrew)
-                subprocess.run(["brew", "install", "pandoc"], check=True)
-            elif shutil.which("apt"):  # Linux (Debian/Ubuntu)
-                subprocess.run(["sudo", "apt", "install", "-y", "pandoc"], check=True)
-            elif shutil.which("choco"):  # Windows (Chocolatey)
-                subprocess.run(["choco", "install", "pandoc", "-y"], check=True)
-            else:
-                raise Exception("Pandoc installation method not found.")
-            print("Pandoc installed successfully.")
-        except Exception as e:
-            print(f"Error installing Pandoc: {e}")
-            return False
-    return True
-
-# def task_install_dependencies():
-#     """Task to install dependencies from requirements.txt"""
+# def install_pandoc():
+#     """Checks if Pandoc is installed and installs it if missing."""
+#     if shutil.which("pandoc") is None:
+#         print("Pandoc not found. Installing...")
+#
+#         try:
+#             if shutil.which("brew"):  # Mac (Homebrew)
+#                 subprocess.run(["brew", "install", "pandoc"], check=True)
+#             elif shutil.which("apt"):  # Linux (Debian/Ubuntu)
+#                 subprocess.run(["sudo", "apt", "install", "-y", "pandoc"], check=True)
+#             elif shutil.which("choco"):  # Windows (Chocolatey)
+#                 subprocess.run(["choco", "install", "pandoc", "-y"], check=True)
+#             else:
+#                 raise Exception("Pandoc installation method not found.")
+#             print("Pandoc installed successfully.")
+#         except Exception as e:
+#             print(f"Error installing Pandoc: {e}")
+#             return False
+#     return True
+#
+# # def task_install_dependencies():
+# #     """Task to install dependencies from requirements.txt"""
+# #     return {
+# #         'actions': ['pip install -r requirements.txt'],
+# #         'verbosity': 2
+# #     }
+#
+# def task_install_pandoc():
+#     """Task to check and install Pandoc"""
 #     return {
-#         'actions': ['pip install -r requirements.txt'],
+#         'actions': [install_pandoc],
 #         'verbosity': 2
 #     }
-
-def task_install_pandoc():
-    """Task to check and install Pandoc"""
-    return {
-        'actions': [install_pandoc],
-        'verbosity': 2
-    }
 
 def update_bloomberg():
     """Prompt the user and update the BLOOMBERG variable in settings.py."""
