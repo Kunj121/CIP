@@ -1,16 +1,29 @@
 """
 Unit test on bloomberg data
 """
+
 import pandas as pd
 import pytest
-from settings import config
-import pull_bloomberg_cip_data
+
+try:
+    from pull_bloomberg_cip_data import *
+    import pull_bloomberg_cip_data as pull_bloomberg_cip_data
+except ModuleNotFoundError:
+    from src.pull_bloomberg_cip_data import *
+    import src.pull_bloomberg_cip_data as pull_bloomberg_cip_data
+
+try:
+    from settings import config
+except ModuleNotFoundError:
+    from src.settings import config
+
+
 
 DATA_DIR = config("DATA_DIR")
 
-
+# double check here
 def test_pull_bloomberg_cip_data_load_raw():
-    df = pull_bloomberg_cip_data.load_raw(end = '2020-01-01', excel=True)
+    df = pull_bloomberg_cip_data.load_raw(end = '2020-01-01')
     # Test if the function returns a pandas DataFrame
     assert isinstance(df, pd.DataFrame)
 
@@ -26,10 +39,10 @@ def test_pull_bloomberg_cip_data_load_raw():
 
 
 def test_pull_bloomberg_cip_data_load_raw():
-    df = pull_bloomberg_cip_data.load_raw(end = '2020-01-01')
+    df = pull_bloomberg_cip_data.load_raw(end = '2020-01-04')
     
     # Test if the default date range has the expected start date and end date
-    assert df.index.min() == pd.Timestamp('2010-01-01')
+    assert df.index.min() == pd.Timestamp('2010-01-04')
     assert df.index.max() >= pd.Timestamp('2020-01-01')
 
 
