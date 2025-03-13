@@ -62,4 +62,5 @@ xlwings==0.33.3
 zstandard==0.23.0
 selenium
 webdriver-manager
+pandoc
 
