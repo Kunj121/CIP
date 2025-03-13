@@ -106,12 +106,12 @@ def install_pandoc():
             return False
     return True
 
-def task_install_dependencies():
-    """Task to install dependencies from requirements.txt"""
-    return {
-        'actions': ['pip install -r requirements.txt'],
-        'verbosity': 2
-    }
+# def task_install_dependencies():
+#     """Task to install dependencies from requirements.txt"""
+#     return {
+#         'actions': ['pip install -r requirements.txt'],
+#         'verbosity': 2
+#     }
 
 def task_install_pandoc():
     """Task to check and install Pandoc"""
@@ -237,7 +237,7 @@ def task_run_notebooks():
     }
 
 
-def task_pull_cip():
+def task_rename_plots():
     """Run CIP analysis and rename output plots correctly."""
 
     import re
@@ -361,7 +361,6 @@ def task_clean_reports():
         PUBLISH_DIR / "paper.aux",
         PUBLISH_DIR / "paper.log",
         PUBLISH_DIR / "paper.out",
-        PUBLISH_DIR / "paper_files",
         PUBLISH_DIR / "spread_plot_rep.pdf"
     ]
 
