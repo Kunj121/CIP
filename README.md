@@ -125,20 +125,3 @@ definitions. That is, all code that references these variables and others are
 loading by importing `config`.
 
 
-### Data and Output Storage
-
-Om:
-Load bloomberg rate/fx data from excel
-Clean dataframes and merge into 1 
-Calculate CIP in accordance with https://www.hbs.edu/ris/Publication%20Files/24-030_1506d32b-3190-4144-8c75-a2326b87f81e.pdf
-Replicate plot and tables
-Extend data to current (2025)
-
-Kunj
-Pull data from bloomberg to excel
-Generate Latex documentation
-Configure pydoit
-Build the 'tidy' format 
-Ensure automation
-Unit test
-docstrings
